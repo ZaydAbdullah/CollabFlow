@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CollabFlow · Multi-Screen Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f8;
+            font-family: 'Inter', sans-serif;
+            color: #1a2c3e;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: white;
+            padding: 12px 24px;
+            border-bottom: 1px solid #e2edf2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            color: #1F5E3A;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .nav-btn:hover {
+            background: #e8f0f5;
+        }
+
+        .nav-btn.active {
+            background: #1F5E3A;
+            color: white;
+        }
+
+        /* Main content area - screens swap here */
+        .screen-container {
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 80vh;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active-screen {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SCREEN 1: DASHBOARD / TASK BOARD ===== */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: white;
+            padding: 14px 24px;
+            border-radius: 24px;
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid #e2edf2;
+        }
+        .task-board {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+        }
+        .column {
+            flex: 1;
+            min-width: 260px;
+            background: #f9fdfe;
+            border-radius: 20px;
+            padding: 14px;
+            border: 1px solid #e0edf2;
+        }
+        .task-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #dee9ef;
+        }
+        .add-task-btn {
+            background: #1F5E3A;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+
+        /* ===== SCREEN 2: NEW TASK FORM ===== */
+        .form-card {
+            background: white;
+            border-radius: 28px;
+            padding: 32px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d4e2e8;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== SCREEN 3: TEAM MEMBERS ===== */
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .member-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ===== SCREEN 4: ACTIVITY FEED ===== */
+        .activity-list {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+        }
+        .activity-item {
+            padding: 16px;
+            border-bottom: 1px solid #ecf3f7;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* ===== SCREEN 5: LEADERSHIP & ROLES ===== */
+        .roles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .role-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        /* ===== SCREEN 6: STATS & INSIGHTS ===== */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .insight-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        button {
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 28px;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 450px;
+        }
+        @media (max-width: 700px) {
+            .nav-links { width: 100%; justify-content: center; }
+            .screen-container { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <div class="logo-area">
+        <h2><i class="fas fa-people-arrows"></i> CollabFlow</h2>
+    </div>
+    <div class="nav-links">
+        <button class="nav-btn active" data-screen="screen1">📋 Task Board</button>
+        <button class="nav-btn" data-screen="screen2">➕ New Task</button>
+        <button class="nav-btn" data-screen="screen3">👥 Team Members</button>
+        <button class="nav-btn" data-screen="screen4">📢 Activity Feed</button>
+        <button class="nav-btn" data-screen="screen5">👑 Leadership</button>
+        <button class="nav-btn" data-screen="screen6">📊 Insights</button>
+    </div>
+</div>
+
+<div class="screen-container">
+    <!-- SCREEN 1: Task Board Dashboard -->
+    <div id="screen1" class="screen active-screen">
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-tasks"></i></div><div><h3 id="totalTasks">0</h3><p>Total Tasks</p></div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div><h3 id="urgentTasks">0</h3><p>Due Soon</p></div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-user-check"></i></div><div><h3 id="activeCount">0</h3><p>Active Members</p></div></div>
+        </div>
+        <div style="margin-bottom: 20px; text-align: right;">
+            <button class="add-task-btn" id="quickAddBtn"><i class="fas fa-plus"></i> Quick Task</button>
+        </div>
+        <div class="task-board" id="taskBoard"></div>
+    </div>
+
+    <!-- SCREEN 2: New Task Form -->
+    <div id="screen2" class="screen">
+        <div class="form-card">
+            <h2 style="margin-bottom: 24px;"><i class="fas fa-plus-circle"></i> Create New Task</h2>
+            <div class="form-group">
+                <label>Task Title</label>
+                <input type="text" id="formTaskTitle" placeholder="e.g., Write introduction section">
+            </div>
+            <div class="form-group">
+                <label>Assign To</label>
+                <select id="formAssignee">
+                    <option value="1">Alex Chen (Leader)</option>
+                    <option value="2">Jamie Lin (Co-leader)</option>
+                    <option value="3">Taylor Reed (Member)</option>
+                    <option value="4">Morgan S. (Member)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" id="formDueDate">
+            </div>
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <textarea rows="3" id="formDesc" placeholder="Add details..."></textarea>
+            </div>
+            <button class="add-task-btn" id="submitTaskBtn" style="width: 100%;">Create Task →</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: Team Members -->
+    <div id="screen3" class="screen">
+        <h2 style="margin-bottom: 24px;"><i class="fas fa-users"></i> Team Members & Status</h2>
+        <div class="members-grid" id="membersGrid"></div>
+        <div style="margin-top: 24px; background: #fff3e0; padding: 16px; border-radius: 20px;">
+            <i class="fas fa-lightbulb"></i> <strong>Insight:</strong> Inactive members increase workload for others. Use @mentions to nudge them.
+        </div>
+    </div>
+
+    <!-- SCREEN 4: Activity Feed -->
+    <div id="screen4" class="screen">
+        <h2 style="margin-bottom: 24px;"><i class="fas fa-bell"></i> Live Activity Feed</h2>
+        <div class="activity-list" id="activityList"></div>
+    </div>
+
+    <!-- SCREEN 5: Leadership & Roles -->
+    <div id="screen5" class="screen">
+        <h2 style="margin-bottom: 24px;"><i class="fas fa-crown"></i> Leadership & Role System</h2>
+        <div class="roles-container" id="rolesContainer"></div>
+        <div style="margin-top: 24px; background: #e8f5e9; padding: 20px; border-radius: 20px;">
+            <h3>Flexible Leadership Model</h3>
+            <p>Based on research: "Either too many leaders or weak leadership leads to disorganized task management." CollabFlow allows 1-3 co-leaders with shared permissions.</p>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: Insights & Statistics -->
+    <div id="screen6" class="screen">
+        <h2 style="margin-bottom: 24px;"><i class="fas fa-chart-line"></i> Project Insights</h2>
+        <div class="insights-grid" id="insightsGrid"></div>
+    </div>
+</div>
+
+<!-- Modal for quick add -->
+<div id="quickModal" class="modal">
+    <div class="modal-content">
+        <h3>Quick Task</h3>
+        <input type="text" id="quickTitle" placeholder="Task title" style="width:100%; padding:12px; margin:12px 0;">
+        <select id="quickAssignee" style="width:100%; padding:12px; margin:12px 0;">
+            <option value="1">Alex</option><option value="2">Jamie</option><option value="3">Taylor</option><option value="4">Morgan</option>
+        </select>
+        <input type="date" id="quickDue" style="width:100%; padding:12px; margin:12px 0;">
+        <button id="confirmQuickBtn" style="background:#1F5E3A; color:white; padding:12px; border:none; border-radius:40px;">Add</button>
+        <button id="closeQuickBtn" style="margin-top:8px; padding:8px;">Cancel</button>
+    </div>
+</div>
+
+<script>
+    // Data
+    const members = [
+        { id: 1, name: "Alex Chen", role: "Leader", avatar: "👨‍💻", lastActive: new Date().toISOString().split('T')[0], tasksDone: 5 },
+        { id: 2, name: "Jamie Lin", role: "Co-leader", avatar: "👩‍💻", lastActive: new Date().toISOString().split('T')[0], tasksDone: 3 },
+        { id: 3, name: "Taylor Reed", role: "Member", avatar: "🧑‍🎓", lastActive: getPastDate(5), tasksDone: 1 },
+        { id: 4, name: "Morgan S.", role: "Member", avatar: "👩‍🎓", lastActive: new Date().toISOString().split('T')[0], tasksDone: 2 }
+    ];
+
+    let tasks = [
+        { id: 101, title: "Research paper outline", status: "todo", assigneeId: 1, dueDate: getFutureDate(3), desc: "Complete outline with sources" },
+        { id: 102, title: "Design system mockup", status: "inprogress", assigneeId: 2, dueDate: getFutureDate(2), desc: "Figma wireframes" },
+        { id: 103, title: "Literature review", status: "todo", assigneeId: 3, dueDate: getFutureDate(1), desc: "Find 10 relevant papers" },
+        { id: 104, title: "Final presentation", status: "done", assigneeId: 1, dueDate: getFutureDate(7), desc: "Slides ready" }
+    ];
+
+    let activities = [
+        "✅ System ready — clear task assignment prevents duplication",
+        "📌 Research shows: miscommunication is the #1 issue in group work"
+    ];
+    let nextId = 105;
+
+    function getFutureDate(days) { let d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().split('T')[0]; }
+    function getPastDate(days) { let d = new Date(); d.setDate(d.getDate() - days); return d.toISOString().split('T')[0]; }
+
+    function addActivity(msg) {
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        activities.unshift(`[${time}] ${msg}`);
+        if (activities.length > 20) activities.pop();
+        renderActivityFeed();
+    }
+
+    function getMemberName(id) { let m = members.find(m => m.id === id); return m ? m.name : "Unknown"; }
+    function isActive(m) { let last = new Date(m.lastActive); let now = new Date(); let diff = Math.floor((now - last) / (1000*60*60*24)); return diff <= 2; }
+
+    // Render Screen 1: Task Board
+    function renderTaskBoard() {
+        const todoTasks = tasks.filter(t => t.status === 'todo');
+        const progTasks = tasks.filter(t => t.status === 'inprogress');
+        const doneTasks = tasks.filter(t => t.status === 'done');
+        const boardHtml = `
+            <div class="column"><div class="column-title">📋 To Do (${todoTasks.length})</div>${renderTaskList(todoTasks)}</div>
+            <div class="column"><div class="column-title">⚙️ In Progress (${progTasks.length})</div>${renderTaskList(progTasks)}</div>
+            <div class="column"><div class="column-title">✅ Done (${doneTasks.length})</div>${renderTaskList(doneTasks)}</div>
+        `;
+        document.getElementById('taskBoard').innerHTML = boardHtml;
+        document.getElementById('totalTasks').innerText = tasks.length;
+        const today = new Date().toISOString().split('T')[0];
+        const urgent = tasks.filter(t => t.status === 'todo' && t.dueDate <= today).length;
+        document.getElementById('urgentTasks').innerText = urgent;
+        document.getElementById('activeCount').innerText = members.filter(m => isActive(m)).length;
+        attachTaskEvents();
+    }
+
+    function renderTaskList(taskArray) {
+        if (taskArray.length === 0) return '<div style="padding:20px; text-align:center; color:#999;">No tasks</div>';
+        return taskArray.map(t => `
+            <div class="task-card">
+                <div><strong>${t.title}</strong></div>
+                <div style="font-size:12px; color:#2C8C5A; margin:8px 0;">👤 ${getMemberName(t.assigneeId)}</div>
+                <div style="font-size:11px;">📅 Due: ${t.dueDate}</div>
+                <select class="task-status-select" data-id="${t.id}" style="margin-top:8px; font-size:12px; padding:4px;">
+                    <option value="todo" ${t.status==='todo'?'selected':''}>To Do</option>
+                    <option value="inprogress" ${t.status==='inprogress'?'selected':''}>In Progress</option>
+                    <option value="done" ${t.status==='done'?'selected':''}>Done</option>
+                </select>
+                <button class="delete-task-btn" data-id="${t.id}" style="margin-left:8px; background:#ffeeee; border:none; padding:4px 8px; border-radius:12px;">🗑️</button>
+            </div>
+        `).join('');
+    }
+
+    function attachTaskEvents() {
+        document.querySelectorAll('.task-status-select').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                const id = parseInt(sel.dataset.id);
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    const old = task.status;
+                    task.status = sel.value;
+                    addActivity(`📌 "${task.title}" changed from ${old} → ${task.status}`);
+                    renderTaskBoard();
+                }
+            });
+        });
+        document.querySelectorAll('.delete-task-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.dataset.id);
+                const idx = tasks.findIndex(t => t.id === id);
+                if (idx !== -1) {
+                    const removed = tasks[idx];
+                    tasks.splice(idx, 1);
+                    addActivity(`🗑️ Deleted task: "${removed.title}"`);
+                    renderTaskBoard();
+                }
+            });
+        });
+    }
+
+    function addNewTask(title, assigneeId, dueDate, desc = '') {
+        if (!title.trim()) { alert("Enter task title"); return false; }
+        if (!dueDate) { alert("Enter due date"); return false; }
+        tasks.push({ id: nextId++, title: title.trim(), status: "todo", assigneeId: parseInt(assigneeId), dueDate: dueDate, desc: desc });
+        addActivity(`➕ New task: "${title}" assigned to ${getMemberName(assigneeId)} (visible ownership prevents duplication)`);
+        renderTaskBoard();
+        return true;
+    }
+
+    // Screen 3: Members
+    function renderMembersScreen() {
+        const grid = document.getElementById('membersGrid');
+        grid.innerHTML = members.map(m => `
+            <div class="member-card">
+                <div style="font-size:40px;">${m.avatar}</div>
+                <div><strong>${m.name}</strong><br>${m.role}<br><span style="color:${isActive(m)?'green':'orange'}">${isActive(m)?'🟢 Active':'🔴 Inactive'}</span><br>✅ ${m.tasksDone} tasks done</div>
+            </div>
+        `).join('');
+    }
+
+    // Screen 4: Activity
+    function renderActivityFeed() {
+        const container = document.getElementById('activityList');
+        container.innerHTML = activities.map(a => `<div class="activity-item"><i class="fas fa-comment"></i> ${a}</div>`).join('');
+    }
+
+    // Screen 5: Leadership
+    function renderLeadershipScreen() {
+        const leaders = members.filter(m => m.role === 'Leader' || m.role === 'Co-leader');
+        const membersOnly = members.filter(m => m.role === 'Member');
+        document.getElementById('rolesContainer').innerHTML = `
+            <div class="role-card"><i class="fas fa-crown" style="font-size:40px; color:#F4B942;"></i><h3>Leadership Team</h3>${leaders.map(l => `<p>${l.name} (${l.role})</p>`).join('')}<p style="margin-top:12px;">👥 Can assign tasks, edit deadlines, view progress</p></div>
+            <div class="role-card"><i class="fas fa-user-friends"></i><h3>Team Members</h3>${membersOnly.map(m => `<p>${m.name}</p>`).join('')}<p style="margin-top:12px;">✅ Can update task status, comment, receive notifications</p></div>
+        `;
+    }
+
+    // Screen 6: Insights
+    function renderInsightsScreen() {
+        const todoCount = tasks.filter(t => t.status === 'todo').length;
+        const doneCount = tasks.filter(t => t.status === 'done').length;
+        const inactiveCount = members.filter(m => !isActive(m)).length;
+        const completionRate = tasks.length === 0 ? 0 : Math.round((doneCount / tasks.length) * 100);
+        document.getElementById('insightsGrid').innerHTML = `
+            <div class="insight-card"><i class="fas fa-hourglass-half" style="font-size:40px;"></i><h3>${todoCount}</h3><p>Tasks pending</p></div>
+            <div class="insight-card"><i class="fas fa-check-circle" style="font-size:40px; color:#2C8C5A;"></i><h3>${completionRate}%</h3><p>Completion rate</p></div>
+            <div class="insight-card"><i class="fas fa-user-slash" style="font-size:40px; color:#C0421A;"></i><h3>${inactiveCount}</h3><p>Inactive members</p><small>⚠️ Increases workload for others</small></div>
+            <div class="insight-card"><i class="fas fa-exchange-alt"></i><h3>${tasks.length}</h3><p>Total tasks created</p></div>
+        `;
+    }
+
+    // Navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const screenId = btn.dataset.screen;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+            
+            // Refresh dynamic content
+            if (screenId === 'screen3') renderMembersScreen();
+            if (screenId === 'screen4') renderActivityFeed();
+            if (screenId === 'screen5') renderLeadershipScreen();
+            if (screenId === 'screen6') renderInsightsScreen();
+        });
+    });
+
+    // Form submission
+    document.getElementById('submitTaskBtn').addEventListener('click', () => {
+        const title = document.getElementById('formTaskTitle').value;
+        const assignee = document.getElementById('formAssignee').value;
+        const due = document.getElementById('formDueDate').value;
+        if (addNewTask(title, assignee, due, '')) {
+            document.getElementById('formTaskTitle').value = '';
+            alert('Task created! Go to Task Board to see it.');
+        }
+    });
+
+    // Quick modal
+    const modal = document.getElementById('quickModal');
+    document.getElementById('quickAddBtn').addEventListener('click', () => modal.style.display = 'flex');
+    document.getElementById('closeQuickBtn').addEventListener('click', () => modal.style.display = 'none');
+    document.getElementById('confirmQuickBtn').addEventListener('click', () => {
+        const title = document.getElementById('quickTitle').value;
+        const assignee = document.getElementById('quickAssignee').value;
+        const due = document.getElementById('quickDue').value;
+        if (addNewTask(title, assignee, due, '')) {
+            modal.style.display = 'none';
+            document.getElementById('quickTitle').value = '';
+        }
+    });
+
+    // Initial renders
+    renderTaskBoard();
+    renderMembersScreen();
+    renderActivityFeed();
+    renderLeadershipScreen();
+    renderInsightsScreen();
+</script>
+</body>
+</html>
